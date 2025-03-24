@@ -1,4 +1,6 @@
 package com.materialdesign.tournamentproject
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,24 +25,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupViews() {
-
         recyclerView = findViewById(R.id.recyclerTournaments)
         recyclerView.layoutManager = LinearLayoutManager(this)
         tournamentAdapter = TournamentAdapter(createSampleTournaments())
         recyclerView.adapter = tournamentAdapter
-
 
         val btnAll = findViewById<MaterialButton>(R.id.btnAll)
         val btnActive = findViewById<MaterialButton>(R.id.btnActive)
         val btnUpcoming = findViewById<MaterialButton>(R.id.btnUpcoming)
         val btnCompleted = findViewById<MaterialButton>(R.id.btnCompleted)
 
-
         btnAll.setOnClickListener { filterTournaments("all") }
         btnActive.setOnClickListener { filterTournaments("active") }
         btnUpcoming.setOnClickListener { filterTournaments("upcoming") }
         btnCompleted.setOnClickListener { filterTournaments("completed") }
-
 
         val fabAddTournament = findViewById<FloatingActionButton>(R.id.fabAddTournament)
         fabAddTournament.setOnClickListener {
@@ -51,22 +49,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        bottomNavigation.selectedItemId = R.id.nav_tournaments
+
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_tournaments -> {
-
+                    // Already on tournaments screen
                     true
                 }
                 R.id.nav_teams -> {
-
-                    Toast.makeText(this, "Teams section clicked", Toast.LENGTH_SHORT).show()
-                    // TODO: Navigate to teams screen
+                    startActivity(TeamsActivity.createIntent(this))
+                    finish()
                     true
                 }
                 R.id.nav_profile -> {
-
-                    Toast.makeText(this, "Profile section clicked", Toast.LENGTH_SHORT).show()
-                    // TODO: Navigate to profile screen
+                    startActivity(ProfileActivity.createIntent(this))
+                    finish()
                     true
                 }
                 else -> false
@@ -75,12 +73,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadTournaments() {
-
         tournamentAdapter.updateData(createSampleTournaments())
     }
 
     private fun filterTournaments(filter: String) {
-
         val filteredList = when (filter) {
             "all" -> createSampleTournaments()
             "active" -> createSampleTournaments().filter { it.status == "Active" }
@@ -108,5 +104,9 @@ class MainActivity : AppCompatActivity() {
                 status = "Upcoming"
             )
         )
+    }
+
+    companion object {
+        fun createIntent(context: Context) = Intent(context, MainActivity::class.java)
     }
 }
